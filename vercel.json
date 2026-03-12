@@ -1,6 +1,0 @@
-{
-  "buildCommand": "pnpm build",
-  "outputDirectory": "packages/ui/build",
-  "installCommand": "pnpm install",
-  "framework": "vite"
-}
