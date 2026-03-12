@@ -2,32 +2,26 @@
 
 ## Quick Start
 
-### 1. Prepare your VPS
-```bash
-ssh root@77.42.40.0 'bash -s' < setup.sh
-```
-
-### 2. Configure
-```bash
-cp .env.example .env
-# Edit .env with secure passwords
-```
-
-### 3. Deploy
+### 1. Deploy Dittofeed
 ```bash
 chmod +x deploy.sh
 ./deploy.sh 77.42.40.0 root
 ```
 
-### 4. Configure DNS
-In Hostinger/Namecheap, add an **A record**:
-- **Host**: `ditto`
-- **Type**: `A`
-- **Value**: `77.42.40.0`
-- **TTL**: Auto
+### 2. Configure nginx (on VPS)
+```bash
+# Copy nginx config
+scp nginx-dittofeed.conf root@77.42.40.0:/etc/nginx/sites-available/dittofeed
 
-### 5. Access
-Open https://ditto.axeljutoran.com (SSL is automatic via Caddy)
+# Enable site and get SSL
+ssh root@77.42.40.0 'ln -sf /etc/nginx/sites-available/dittofeed /etc/nginx/sites-enabled/ && nginx -t && systemctl reload nginx && certbot --nginx -d ditto.axeljutoran.com --non-interactive --agree-tos -m tu@email.com'
+```
+
+### 3. DNS (already configured)
+A record: `ditto` → `77.42.40.0`
+
+### 4. Access
+https://ditto.axeljutoran.com
 
 ## CI/CD (GitHub Actions)
 
