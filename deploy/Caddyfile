@@ -1,0 +1,3 @@
+ditto.axeljutoran.com {
+    reverse_proxy dittofeed-lite:3000
+}

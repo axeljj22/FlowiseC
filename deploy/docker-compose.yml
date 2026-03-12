@@ -1,12 +1,28 @@
 version: "3.9"
 
 services:
+  # Caddy - Reverse proxy with automatic SSL
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - dittofeed-lite
+    networks:
+      - dittofeed-net
+
   # Dittofeed Lite - All-in-one (Dashboard + API + Worker)
   dittofeed-lite:
     image: dittofeed/dittofeed-lite:${IMAGE_TAG:-v0.23.0}
     restart: always
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -28,7 +44,7 @@ services:
       - WORKSPACE_NAME=${WORKSPACE_NAME:-Default}
       - AUTH_MODE=single-tenant
       - NODE_ENV=production
-      - DASHBOARD_API_BASE=http://localhost:3000
+      - DASHBOARD_API_BASE=https://ditto.axeljutoran.com
       - BOOTSTRAP=true
       - PORT=3000
       - HOST=0.0.0.0
@@ -102,6 +118,8 @@ volumes:
   postgres_data:
   clickhouse_data:
   clickhouse_logs:
+  caddy_data:
+  caddy_config:
 
 networks:
   dittofeed-net:
